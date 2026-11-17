@@ -42,9 +42,7 @@ public class BookRepository {
     public List<Book> getAllBooks(){
         String sql = "select * from books";
         List<Book> books =jdbcTemplate.query(sql,BOOK_ROW_MAPPER);
-        if(books.isEmpty()){
-            return null;
-        }
+
         return books;
     }
 

@@ -3,7 +3,14 @@
     <h1>图书管理系统</h1>
     <h2>图书列表</h2>
 
-    <p v-if="books.length === 0">暂无图书</p>
+    <button type="button" :disabled="loading"@click="loadBooks">
+      刷新列表
+    </button>
+
+    <p v-if="loading">正在加载图书…</p>
+    <p v-else-if="errorMessage" role="alert">{{ errorMessage }}</p>
+    <p v-else-if="books.length === 0">暂无图书</p>
+
     <table v-else>
       <thead>
       <tr>
@@ -30,13 +37,27 @@
 </template>
 
 <script setup>
-import{ref}from'vue'
-const books = ref([
-  {
-    id:1,name:'西游记',author:'吴冠中',price:66,description:"神魔小说，四大名著之一",
-  },
-  {
-    id:2,name:'红楼梦',author:'忘记了',price:66,description:"四大名著之一"
+import{onMounted,ref} from 'vue'
+const books = ref([])
+const loading = ref(true)
+const errorMessage = ref('')
+
+async function loadBooks(){
+  loading.value = true
+  errorMessage.value = ''
+
+  try{
+    const response = await fetch('/api/books')
+    if(!response.ok){
+      throw new Error(`查询图书失败 status: ${response.status}`)
+    }
+    const data = await response.json()
+    books.value = data
+  }catch (error){
+    errorMessage.value = error.message
+  }finally {
+    loading.value = false
   }
-])
+}
+onMounted(loadBooks)
 </script>
