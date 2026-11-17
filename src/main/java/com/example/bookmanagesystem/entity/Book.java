@@ -1,6 +1,5 @@
 package com.example.bookmanagesystem.entity;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 public class Book {
@@ -25,43 +24,50 @@ public class Book {
         return id;
     }
 
-    public void setId(Integer id){
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
     }
 
     public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author){
+    public void setAuthor(String author) {
         this.author = author;
     }
-    public String getBookName() {
-        return bookName;
+
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setBookName(String bookName){
-        this.bookName = bookName;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description){
+    public void setDescription(String description) {
         this.description = description;
-    }
-
-    public BigDecimal getPrice(){
-        return price;
-    }
-
-    public void setPrice(BigDecimal price){
-        this.price = price;
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "Book{" +
+                "id=" + id +
+                ", bookName='" + bookName + '\'' +
+                ", author='" + author + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

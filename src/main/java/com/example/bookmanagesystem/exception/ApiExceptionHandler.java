@@ -1,0 +1,24 @@
+package com.example.bookmanagesystem.exception;
+
+
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+@RestController
+public class ApiExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String,Object> handleValidation(MethodArgumentNotValidException exception){
+        Map<String,String>errors = new LinkedHashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(
+                error->errors.putIfAbsent(error.getField(),error.getDefaultMessage())
+        );
+        return Map.of(
+                "message","请求参数",
+                "errors",errors
+        );
+    }
+}
