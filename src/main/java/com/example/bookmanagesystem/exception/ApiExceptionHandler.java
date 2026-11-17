@@ -4,11 +4,12 @@ package com.example.bookmanagesystem.exception;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@RestController
+@RestControllerAdvice
 public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String,Object> handleValidation(MethodArgumentNotValidException exception){

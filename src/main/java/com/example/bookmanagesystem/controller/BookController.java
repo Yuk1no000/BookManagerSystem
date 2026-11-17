@@ -30,11 +30,13 @@ public class BookController {
     //添加
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Book add(@Valid @RequestBody BookRequest request){
+    public Book add(
+            @Valid
+            @RequestBody BookRequest request
+    ){
         return bookService.add(toBook(request));
     }
 
-    @PostMapping
     public ResponseEntity<Book> findById(@PathVariable("id")Integer id){
         Book book = bookService.getBookById(id);
         if(book == null){
@@ -56,7 +58,8 @@ public class BookController {
     //更新
     @PutMapping("/{id}")
     public ResponseEntity<Book> update(
-            @PathVariable("/{id}")Integer id,
+            @PathVariable("id")Integer id,
+            @Valid
             @RequestBody BookRequest request
     )
     {

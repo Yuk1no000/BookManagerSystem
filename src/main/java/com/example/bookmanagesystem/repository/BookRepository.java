@@ -4,8 +4,12 @@ package com.example.bookmanagesystem.repository;
 import com.example.bookmanagesystem.entity.Book;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -47,14 +51,31 @@ public class BookRepository {
     //添加
     public int addById(Book newBook){
         String sql = "INSERT INTO books(name,author,price,description)values(?,?,?,?)";
-        return jdbcTemplate.update(
-                sql,
-                newBook.getBookName(),
-                newBook.getAuthor(),
-                newBook.getPrice(),
-                newBook.getDescription()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1,newBook.getBookName());
+            statement.setString(2,newBook.getAuthor());
+            statement.setBigDecimal(3,newBook.getPrice());
+            statement.setString(4,newBook.getDescription());
+            return statement;
+        },keyHolder);
+        Number id = keyHolder.getKey();
+        if(id == null){
+            throw new IllegalStateException("新增书籍后未能获取生成的ID");
+        }
+        return id.intValue();
     }
+//    public int addById(Book newBook){
+//        String sql = "INSERT INTO books(name,author,price,description)values(?,?,?,?)";
+//        return jdbcTemplate.update(
+//                sql,
+//                newBook.getBookName(),
+//                newBook.getAuthor(),
+//                newBook.getPrice(),
+//                newBook.getDescription()
+//                );
+//    }
 
     //更新
     public int updateBookById(Integer id,Book book){
