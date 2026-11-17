@@ -1,71 +1,69 @@
 package com.example.bookmanagesystem.service;
 
 import com.example.bookmanagesystem.entity.Book;
+import com.example.bookmanagesystem.repository.BookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class BookService {
-    private final List<Book> books = new ArrayList<>();
 
-    private Integer nextId = 1;
+    private final BookRepository bookRepository;
 
-    public synchronized Book add(Book book)
+    public BookService(BookRepository bookRepository){
+        this.bookRepository = bookRepository;
+    }
+
+    //新增
+    @Transactional
+    public Book add(Book book)
     {
-        book.setId(nextId++);
-        books.add(book);
-        return book;
+        int id = bookRepository.addById(book);
+        return bookRepository.findById(id);
     }
 
-    public synchronized List<Book> getAllBooks()
+    //获取所有书籍
+    public List<Book> getAllBooks()
     {
-        return new ArrayList<>(books);
+        return bookRepository.getAllBooks();
     }
 
-    public synchronized Book getBookById(Integer id){
-        int index = findIndexById(id);
-        if(index == -1){
-            return null;
-        }
-        return books.get(index);
+    //根据ID获取书籍
+    public Book getBookById(Integer id){
+        return bookRepository.findById(id);
     }
 
-    public synchronized boolean deleteBookById(Integer id){
-        int index = findIndexById(id);
-        if(index==-1){
+    //删除
+    public boolean deleteBookById(Integer id){
+        int rows = bookRepository.deleteById(id);
+        if(rows == 0){
             return false;
         }
-        books.remove(index);
         return true;
     }
 
-    public synchronized Book updateBookById(Integer id,Book newBook){
-        int index = findIndexById(id);
-        if(index == -1){
+    //更新
+    @Transactional
+    public Book updateBookById(Integer id,Book newBook){
+        int rows = bookRepository.updateBookById(id,newBook);
+        if(rows == 0) {
             return null;
         }
-        Book updatedBook = new Book(
-                id,
-                newBook.getBookName(),
-                newBook.getAuthor(),
-                newBook.getPrice(),
-                newBook.getDescription()
-        );
-        books.set(index,updatedBook);
-        return updatedBook;
+        return bookRepository.findById(id);
     }
 
 
-    public Integer findIndexById(Integer id){
-        for(int i=0;i<books.size();i++){
-            Book book = books.get(i);
-            if(id.equals(book.getId())){
-                return i;
-            }
-        }
-        return -1;
-    }
+//    public Integer findIndexById(Integer id){
+//        for(int i=0;i<books.size();i++){
+//            Book book = books.get(i);
+//            if(id.equals(book.getId())){
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
 
 }
