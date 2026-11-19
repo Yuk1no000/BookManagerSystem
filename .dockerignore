@@ -2,5 +2,6 @@
 .idea
 .env
 target
+logs
 frontend
 **/.DS_Store

@@ -78,6 +78,16 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <logging.file.name>${project.build.directory}/logging-tests/book-manage.log</logging.file.name>
+                        <logging.logback.rollingpolicy.file-name-pattern>${project.build.directory}/logging-tests/archive/book-manage.%d{yyyy-MM-dd}.%i.log.gz</logging.logback.rollingpolicy.file-name-pattern>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>

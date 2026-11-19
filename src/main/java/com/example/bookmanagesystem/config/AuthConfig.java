@@ -83,23 +83,36 @@ public class AuthConfig {
 
                 .formLogin(form -> form
                         .loginProcessingUrl("/api/auth/login")
-                        .successHandler((request, response, authentication) ->
-                                response.setStatus(204))
+                        .successHandler((request, response, authentication) -> {
+                            log.info("登录成功 user={} method={} path={}",
+                                    authentication.getName(), request.getMethod(), request.getRequestURI());
+                            response.setStatus(204);
+                        })
                         .failureHandler((request, response, exception) ->{
-                            log.warn(exception.getMessage());
+                            log.warn("登录失败 method={} path={} reason={}",
+                                    request.getMethod(), request.getRequestURI(),
+                                    exception.getClass().getSimpleName());
                             response.setStatus(401);
                                 })
                 )
 
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")
-                        .logoutSuccessHandler((request, response, authentication) ->
-                                response.setStatus(204))
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            log.info("退出登录 user={} method={} path={}",
+                                    authentication == null ? "anonymous" : authentication.getName(),
+                                    request.getMethod(), request.getRequestURI());
+                            response.setStatus(204);
+                        })
                 )
 
                 .exceptionHandling(errors -> errors
-                        .authenticationEntryPoint((request, response, exception) ->
-                                response.setStatus(401))
+                        .authenticationEntryPoint((request, response, exception) -> {
+                            log.warn("未登录访问 method={} path={} reason={}",
+                                    request.getMethod(), request.getRequestURI(),
+                                    exception.getClass().getSimpleName());
+                            response.setStatus(401);
+                        })
                         .accessDeniedHandler((request, response, exception) ->{
                             log.warn(
                                     "访问被拒绝,method={},url={},reason={}",

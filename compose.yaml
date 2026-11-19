@@ -33,6 +33,8 @@ services:
       DEMO_READER_PASSWORD: ${DEMO_READER_PASSWORD:?请在.env中设置读者密码}
       DEMO_LIBRARIAN_PASSWORD: ${DEMO_LIBRARIAN_PASSWORD:?请在.env中设置图书管理员密码}
       DEMO_ADMIN_PASSWORD: ${DEMO_ADMIN_PASSWORD:?请在.env中设置系统管理员密码}
+    volumes:
+      - ./logs/backend:/app/logs
     ports:
       - "127.0.0.1:${BACKEND_PORT:-8080}:8080"
     depends_on:
