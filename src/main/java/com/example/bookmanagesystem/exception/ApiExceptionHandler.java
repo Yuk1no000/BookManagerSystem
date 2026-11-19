@@ -26,7 +26,8 @@ public class ApiExceptionHandler {
                 error->errors.putIfAbsent(error.getField(),error.getDefaultMessage())
         );
         return Map.of(
-                "message","服务器处理失败"
+                "message","请求参数不合法",
+                "errors",errors
         );
     }
 
@@ -35,8 +36,7 @@ public class ApiExceptionHandler {
     public Map<String,Object> handleDataAccessException(DataAccessException exception) {
         log.error("数据库操作异常", exception);
         return Map.of(
-                "message", "数据库操作异常",
-                "error", exception.getMessage()
+                "message", "服务器处理失败"
         );
     }
 }

@@ -3,6 +3,7 @@ package com.example.bookmanagesystem.service;
 import com.example.bookmanagesystem.entity.Book;
 import com.example.bookmanagesystem.repository.BookRepository;
 import com.example.bookmanagesystem.repository.OperationLogRepository;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class BookService {
     {
         int id = bookRepository.addById(book);
         // 在新增成功、拿到生成的 ID 后：
-        operationLogRepository.record(actor, "新增图书", id);
+        operationLogRepository.record(actor, "新增图书", id, MDC.get("requestId"));
         return bookRepository.findById(id);
     }
 
@@ -53,7 +54,7 @@ public class BookService {
             return false;
         }
         // 删除成功后，记录操作日志：
-        operationLogRepository.record(actor, "删除图书", id);
+        operationLogRepository.record(actor, "删除图书", id, MDC.get("requestId"));
         return true;
     }
 
@@ -65,7 +66,7 @@ public class BookService {
             return null;
         }
         // 更新成功后，记录操作日志：
-        operationLogRepository.record(actor, "更新图书", id);
+        operationLogRepository.record(actor, "更新图书", id,MDC.get("requestId"));
         return bookRepository.findById(id);
     }
 

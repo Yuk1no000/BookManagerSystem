@@ -24,3 +24,11 @@ CREATE TABLE IF NOT EXISTS operation_log (
     INDEX idx_operation_log_book_time (book_id, created_at),
     INDEX idx_operation_log_actor_time (actor, created_at)
 );
+
+ALTER TABLE operation_log
+    ADD COLUMN request_id CHAR(36) NULL;
+
+CREATE INDEX idx_operation_log_request_id
+    ON operation_log (request_id);
+
+SHOW COLUMNS FROM operation_log;

@@ -1,5 +1,7 @@
 package com.example.bookmanagesystem.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class AuthConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthConfig.class);
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -81,8 +85,10 @@ public class AuthConfig {
                         .loginProcessingUrl("/api/auth/login")
                         .successHandler((request, response, authentication) ->
                                 response.setStatus(204))
-                        .failureHandler((request, response, exception) ->
-                                response.setStatus(401))
+                        .failureHandler((request, response, exception) ->{
+                            log.warn(exception.getMessage());
+                            response.setStatus(401);
+                                })
                 )
 
                 .logout(logout -> logout
@@ -94,8 +100,15 @@ public class AuthConfig {
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((request, response, exception) ->
                                 response.setStatus(401))
-                        .accessDeniedHandler((request, response, exception) ->
-                                response.setStatus(403))
+                        .accessDeniedHandler((request, response, exception) ->{
+                            log.warn(
+                                    "访问被拒绝,method={},url={},reason={}",
+                                    request.getMethod(),
+                                    request.getRequestURI(),
+                                    exception.getClass().getSimpleName()
+                            );
+                            response.setStatus(403);
+                        })
                 )
 
                 .build();

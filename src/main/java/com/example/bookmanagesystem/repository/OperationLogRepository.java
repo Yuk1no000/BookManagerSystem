@@ -11,10 +11,10 @@ public class OperationLogRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void record(String actor,String operation,int bookId){
+    public void record(String actor,String operation,int bookId,String requestId){
         jdbcTemplate.update(
-                "INSERT INTO operation_log (actor, operation, book_id) VALUES (?, ?, ?)",
-                actor, operation, bookId
+                "INSERT INTO operation_log (actor, operation, book_id,request_Id) VALUES (?, ?, ?,?)",
+                actor, operation, bookId,requestId
         );
     }
 }
