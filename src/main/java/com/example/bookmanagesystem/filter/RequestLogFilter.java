@@ -62,7 +62,5 @@ public class RequestLogFilter extends OncePerRequestFilter {
                 MDC.remove("requestId");
             }
         }
-
     }
-
 }
