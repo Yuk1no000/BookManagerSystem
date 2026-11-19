@@ -314,3 +314,8 @@ npm.cmd run build
 | 启动时 8080 被占用 | 避免本机 Java 后端与后端容器同时占用该端口 |
 
 部署与维护详见 [DOCKER.md](DOCKER.md)，日志排查详见 [LOGGING.md](LOGGING.md)。
+
+## 提交与交付
+
+按四项提交要求整理的文件清单、演示启动方式、账号获取及检查步骤见 [DELIVERY.md](DELIVERY.md)；AI、脚手架和开源方案使用说明见 [AI_USAGE.md](AI_USAGE.md)。
+

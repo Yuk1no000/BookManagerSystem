@@ -1,0 +1,5 @@
+# 与 compose.yaml 一起使用；仅在空数据目录首次初始化时自动导入演示图书。
+services:
+  db:
+    volumes:
+      - ./src/main/java/com/example/bookmanagesystem/db/demo-data.sql:/docker-entrypoint-initdb.d/02-demo-data.sql:ro
