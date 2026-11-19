@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -33,8 +34,9 @@ public class BookController {
     public Book add(
             @Valid
             @RequestBody BookRequest request
+            , Authentication authentication
     ){
-        return bookService.add(toBook(request));
+        return bookService.add(toBook(request),authentication.getName());
     }
 
     public ResponseEntity<Book> findById(@PathVariable("id")Integer id){
@@ -47,8 +49,10 @@ public class BookController {
 
     //删除
     @DeleteMapping("/{id}")
-    public ResponseEntity<Book> deleteById(@PathVariable("id")Integer id){
-        boolean flag = bookService.deleteBookById(id);
+    public ResponseEntity<Book> deleteById(
+            @PathVariable("id")Integer id
+    , Authentication authentication){
+        boolean flag = bookService.deleteBookById(id,authentication.getName());
         if(!flag){
             return ResponseEntity.notFound().build();
         }
@@ -61,9 +65,10 @@ public class BookController {
             @PathVariable("id")Integer id,
             @Valid
             @RequestBody BookRequest request
+    , Authentication authentication
     )
     {
-        Book updatedBook = bookService.updateBookById(id,toBook(request));
+        Book updatedBook = bookService.updateBookById(id,toBook(request),authentication.getName());
         if(updatedBook == null){
             return ResponseEntity.notFound().build();
         }

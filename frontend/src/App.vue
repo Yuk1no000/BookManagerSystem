@@ -1,112 +1,60 @@
-<template>
-  <main>
-    <h1>图书管理系统</h1>
-    <h2>图书列表</h2>
-
-    <button type="button" :disabled="loading"@click="loadBooks">
-      刷新列表
-    </button>
-
-    <p v-if="loading">正在加载图书…</p>
-    <p v-else-if="errorMessage" role="alert">{{ errorMessage }}</p>
-    <p v-else-if="books.length === 0">暂无图书</p>
-
-    <table v-else>
-      <thead>
-      <tr>
-        <th>编号</th>
-        <th>书名</th>
-        <th>作者</th>
-        <th>价格</th>
-        <th>描述</th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <tr v-for="book in books" :key="book.id">
-        <td>{{book.id}}</td>
-        <td>{{book.bookName}}</td>
-        <td>{{book.author}}</td>
-        <td>{{book.price.toFixed(2)}}</td>
-        <td>{{book.description}}</td>
-      </tr>
-      </tbody>
-    </table>
-
-  </main>
-</template>
-
 <script setup>
-import{onMounted,ref} from 'vue'
-const books = ref([])
-const loading = ref(true)
-const errorMessage = ref('')
+import { computed, ref } from 'vue'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import { currentUser, hasRouteAccess, logout } from './api/auth'
 
-async function loadBooks(){
-  loading.value = true
-  errorMessage.value = ''
+const navigation = [
+  { label: '新增', to: '/books/new' },
+  { label: '查询', to: '/books/search' },
+  { label: '更新', to: '/books/edit' },
+  { label: '删除', to: '/books/delete' }
+]
 
-  try{
-    const response = await fetch('/api/books')
-    if(!response.ok){
-      throw new Error(`查询图书失败 status: ${response.status}`)
-    }
-    const data = await response.json()
-    books.value = data
-  }catch (error){
-    errorMessage.value = error.message
-  }finally {
-    loading.value = false
+const router = useRouter()
+const logoutError = ref('')
+
+const visibleNavigation = computed(() =>
+    navigation.filter(item => hasRouteAccess(router.resolve(item.to)))
+)
+
+async function signOut() {
+  logoutError.value = ''
+
+  try {
+    await logout()
+    await router.replace({ name: 'login' })
+  } catch (error) {
+    logoutError.value = error.message
   }
 }
-
-const form = ref({
-  name:'',
-  author:'',
-  price:'',
-  description:''
-})
-
-const saving = ref(false)
-const saveError = ref('')
-const fieldErrors = ref({})
-
-async function addBooks(){
-  if(saving.value)
-    return
-  saving.value = true
-  saveError.value = ''
-  fieldErrors.value = {}
-
-  try{
-    const payload = {
-      name:form.value.name,
-      author:form.value.author,
-      price:form.value.price === ''?null:form.value.price,
-      description:form.value.description
-    }
-
-    const response = await fetch('/api/books',{
-      method:'POST',
-      headers:{'Context-Type':'application/json'},
-      body:JSON.stringify(payload)
-    })
-    if(!response.ok){
-      const error = await response.json().json().catch(()=>null)
-      fieldErrors.value = error?.errors ?? {}
-      saveError.value = error?.message ?? `新增失败(http${response.status}`
-      return
-    }
-    form.value = {name:'',author: '',price:'',description: ''}
-    await loadBooks()
-  }catch (error){
-    saveError.value = `提交请求失败：${error.message}`
-  }finally {
-    saving.value = false
-  }
-
-}
-
-
-onMounted(loadBooks)
 </script>
+
+
+<template>
+  <div v-if="currentUser">
+    <span>{{ currentUser.username }}</span>
+    <button type="button" @click="signOut">退出</button>
+    <p v-if="logoutError" role="alert">{{ logoutError }}</p>
+  </div>
+  <div class="app-shell">
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <header class="site-header">
+      <RouterLink class="brand" to="/" aria-label="图书管理系统，返回工作台">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>图书管理<span class="brand-light"> / 工作台</span></span>
+      </RouterLink>
+      <nav class="site-nav" aria-label="主导航" v-if="currentUser">
+        <RouterLink to="/" exact-active-class="is-active">工作台</RouterLink>
+        <RouterLink v-for="item in visibleNavigation" :key="item.to" :to="item.to" active-class="is-active">
+          {{ item.label }}
+        </RouterLink>
+      </nav>
+    </header>
+
+    <main id="main-content" class="page-container">
+      <RouterView />
+    </main>
+
+    <footer class="site-footer">图书管理系统 <span>·</span> 馆藏记录管理</footer>
+  </div>
+</template>
